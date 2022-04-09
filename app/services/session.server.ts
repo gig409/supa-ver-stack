@@ -1,45 +1,45 @@
-import { createCookieSessionStorage, redirect } from "@remix-run/node";
+import { createCookieSessionStorage, redirect } from "@remix-run/node"
 
-import type { AuthSession } from "~/database/supabase.server";
+import type { AuthSession } from "~/database/supabase.server"
 import {
   isGET,
   getCurrentPath,
   getRedirectTo,
   makeRedirectToFromHere,
-} from "~/utils/request.server";
-import { mapSession } from "~/utils/session-mapper";
+} from "~/utils/request.server"
+import { mapSession } from "~/utils/session-mapper"
 
-import { getAuthByAccessToken, refreshAccessToken } from "./auth.server";
+import { getAuthByAccessToken, refreshAccessToken } from "./auth.server"
 
 if (!process.env.SESSION_SECRET) {
-  throw new Error("SESSION_SECRET is not set");
+  throw new Error("SESSION_SECRET is not set")
 }
 
 /**
  * Default configuration
  */
 
-const USER_SESSION_KEY = "token";
-const ERROR_SESSION_KEY = "error";
-const LOGIN_URL = "/login";
+const USER_SESSION_KEY = "token"
+const ERROR_SESSION_KEY = "error"
+const LOGIN_URL = "/login"
 
 /**
  * What's stored in session storage cookie
  */
 
 export interface UserSession {
-  accessToken: string;
-  refreshToken: string;
-  userId: string;
-  email: string;
-  expiresIn: number;
-  expiresAt: number;
+  accessToken: string
+  refreshToken: string
+  userId: string
+  email: string
+  expiresIn: number
+  expiresAt: number
 }
 
 export type RealtimeSession = Pick<
   UserSession,
   "accessToken" | "expiresIn" | "expiresAt"
->;
+>
 
 /**
  * Session storage CRUD
@@ -54,18 +54,18 @@ const sessionStorage = createCookieSessionStorage({
     secrets: [process.env.SESSION_SECRET],
     secure: process.env.NODE_ENV === "production",
   },
-});
+})
 
 async function getSession(request: Request) {
-  const cookie = request.headers.get("Cookie");
-  return sessionStorage.getSession(cookie);
+  const cookie = request.headers.get("Cookie")
+  return sessionStorage.getSession(cookie)
 }
 
 export async function getUserSession(
   request: Request
 ): Promise<UserSession | null> {
-  const session = await getSession(request);
-  return session.get(USER_SESSION_KEY);
+  const session = await getSession(request)
+  return session.get(USER_SESSION_KEY)
 }
 
 /**
@@ -85,21 +85,21 @@ export async function commitUserSession(
     userSession,
     flashErrorMessage,
   }: {
-    userSession?: UserSession | null;
-    flashErrorMessage?: string | null;
+    userSession?: UserSession | null
+    flashErrorMessage?: string | null
   } = {}
 ) {
-  const session = await getSession(request);
+  const session = await getSession(request)
 
   // allow user session to be null.
   // useful you want to clear session and display a message explaining why
   if (userSession !== undefined) {
-    session.set(USER_SESSION_KEY, userSession);
+    session.set(USER_SESSION_KEY, userSession)
   }
 
-  session.flash(ERROR_SESSION_KEY, flashErrorMessage);
+  session.flash(ERROR_SESSION_KEY, flashErrorMessage)
 
-  return sessionStorage.commitSession(session);
+  return sessionStorage.commitSession(session)
 }
 
 export async function createUserSession({
@@ -107,11 +107,11 @@ export async function createUserSession({
   authSession,
   redirectTo,
 }: {
-  request: Request;
-  authSession: AuthSession;
-  redirectTo: string;
+  request: Request
+  authSession: AuthSession
+  redirectTo: string
 }) {
-  const userSession = mapSession(authSession);
+  const userSession = mapSession(authSession)
 
   return redirect(redirectTo, {
     headers: {
@@ -120,16 +120,16 @@ export async function createUserSession({
         flashErrorMessage: null,
       }),
     },
-  });
+  })
 }
 
 export async function logout(request: Request) {
-  const session = await getSession(request);
+  const session = await getSession(request)
   return redirect("/", {
     headers: {
       "Set-Cookie": await sessionStorage.destroySession(session),
     },
-  });
+  })
 }
 
 /**
@@ -137,22 +137,22 @@ export async function logout(request: Request) {
  */
 
 async function verifyUserSession(request: Request) {
-  const session = await getUserSession(request);
+  const session = await getUserSession(request)
 
-  if (!session?.accessToken) return false;
+  if (!session?.accessToken) return false
 
   const { error, user: authAccount } = await getAuthByAccessToken(
     session.accessToken
-  );
+  )
 
-  return !(error || !authAccount);
+  return !(error || !authAccount)
 }
 
 async function assertUserSession(
   request: Request,
   { onFailRedirectTo }: { onFailRedirectTo?: string } = {}
 ) {
-  const userSession = await getUserSession(request);
+  const userSession = await getUserSession(request)
 
   // If there is no user session, Fly, You Fools! 🧙‍♂️
   if (!userSession?.accessToken || !userSession?.refreshToken) {
@@ -166,29 +166,29 @@ async function assertUserSession(
           }),
         },
       }
-    );
+    )
   }
 
-  return userSession;
+  return userSession
 }
 
 // used in /refresh-session's loader
 export async function refreshSession(request: Request): Promise<UserSession> {
-  const userSession = await assertUserSession(request);
+  const userSession = await assertUserSession(request)
 
   const { refreshedSession, error } = await refreshAccessToken(
     userSession.refreshToken
-  );
+  )
 
   // 👾 game over, log in again
   // yes, arbitrary, but it's a good way to don't let an illegal user here with an expired token
   if (!refreshedSession || error) {
-    const currentPath = getCurrentPath(request);
+    const currentPath = getCurrentPath(request)
     const redirectUrl =
       // if user access /refresh-session by typing url, don't loop
       currentPath === "/refresh-session"
         ? LOGIN_URL
-        : `${LOGIN_URL}?${makeRedirectToFromHere(request)}`;
+        : `${LOGIN_URL}?${makeRedirectToFromHere(request)}`
 
     // here we throw instead of return because this function promise a UserSession and not a response object
     // https://remix.run/docs/en/v1/guides/constraints#higher-order-functions
@@ -199,10 +199,10 @@ export async function refreshSession(request: Request): Promise<UserSession> {
           flashErrorMessage: "fail-refresh-user-session",
         }),
       },
-    });
+    })
   }
 
-  const refreshedUserSession = mapSession(refreshedSession);
+  const refreshedUserSession = mapSession(refreshedSession)
 
   // refresh is ok and we can redirect
   if (isGET(request)) {
@@ -214,11 +214,11 @@ export async function refreshSession(request: Request): Promise<UserSession> {
           userSession: refreshedUserSession,
         }),
       },
-    });
+    })
   }
 
   // we can't redirect because we are in an action, so, deal with it and don't forget to handle session commit 👮‍♀️
-  return refreshedUserSession;
+  return refreshedUserSession
 }
 
 /**
@@ -241,14 +241,14 @@ export async function requireUserSession(
   // hello there
   const userSession = await assertUserSession(request, {
     onFailRedirectTo,
-  });
+  })
 
   // ok, let's challenge its access token
-  const isValid = await verifyUserSession(request);
+  const isValid = await verifyUserSession(request)
 
   // damn, access token expires but we can redirect. Let's go!
   if (!isValid && isGET(request)) {
-    throw redirect(`/refresh-session?${makeRedirectToFromHere(request)}`);
+    throw redirect(`/refresh-session?${makeRedirectToFromHere(request)}`)
   }
 
   // so, maybe we are in a POST / PUT / PATCH / DELETE method
@@ -256,9 +256,9 @@ export async function requireUserSession(
   // it can be problematic if you use this access token to fetch one of your external api
   // let's refresh session in case of 🧐
   if (!isGET(request)) {
-    return refreshSession(request);
+    return refreshSession(request)
   }
 
   // finally, we have a valid session, let's return it
-  return userSession;
+  return userSession
 }

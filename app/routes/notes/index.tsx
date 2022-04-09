@@ -1,43 +1,43 @@
-import { useEffect } from "react";
+import { useEffect } from "react"
 
-import type { LoaderFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { Link, useLoaderData, useSubmit } from "@remix-run/react";
+import type { LoaderFunction } from "@remix-run/node"
+import { json } from "@remix-run/node"
+import { Link, useLoaderData, useSubmit } from "@remix-run/react"
 
-import { useSupabase } from "~/context/supabase";
-import { getNoteCount } from "~/models/note.server";
-import { requireUserSession } from "~/services/session.server";
+import { useSupabase } from "~/context/supabase"
+import { getNoteCount } from "~/models/note.server"
+import { requireUserSession } from "~/services/session.server"
 
 export const loader: LoaderFunction = async ({ request }) => {
-  await requireUserSession(request);
+  await requireUserSession(request)
 
-  const nbOfNotes = await getNoteCount();
+  const nbOfNotes = await getNoteCount()
 
   return json({
     nbOfNotes,
-  });
-};
+  })
+}
 
 export default function NoteIndexPage() {
-  const supabase = useSupabase();
-  const { nbOfNotes } = useLoaderData();
-  const submit = useSubmit();
+  const supabase = useSupabase()
+  const { nbOfNotes } = useLoaderData()
+  const submit = useSubmit()
 
   useEffect(() => {
     const subscription = supabase
       .from("Note")
       .on("INSERT", () => {
-        submit(null, { replace: true });
+        submit(null, { replace: true })
       })
       .on("DELETE", () => {
-        submit(null, { replace: true });
+        submit(null, { replace: true })
       })
-      .subscribe();
+      .subscribe()
 
     return () => {
-      subscription?.unsubscribe();
-    };
-  }, [supabase, submit]);
+      subscription?.unsubscribe()
+    }
+  }, [supabase, submit])
 
   return (
     <>
@@ -56,5 +56,5 @@ export default function NoteIndexPage() {
         <span>{nbOfNotes}</span>
       </div>
     </>
-  );
+  )
 }

@@ -1,19 +1,19 @@
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
-export type { SupabaseClient };
+import { createClient, SupabaseClient } from "@supabase/supabase-js"
+export type { SupabaseClient }
 
 declare global {
   interface Window {
     ENV: {
-      SUPABASE_URL: string;
-      SUPABASE_ANON_PUBLIC: string;
-    };
+      SUPABASE_URL: string
+      SUPABASE_ANON_PUBLIC: string
+    }
   }
 }
 
-if (!window.ENV.SUPABASE_URL) throw new Error("SUPABASE_URL is not set");
+if (!window.ENV.SUPABASE_URL) throw new Error("SUPABASE_URL is not set")
 
 if (!window.ENV.SUPABASE_ANON_PUBLIC)
-  throw new Error("SUPABASE_ANON_PUBLIC is not set");
+  throw new Error("SUPABASE_ANON_PUBLIC is not set")
 
 // const supabaseOptions = {
 //   fetch, // see ⚠️ cloudflare
@@ -35,5 +35,5 @@ export function getSupabaseClient() {
       autoRefreshToken: false,
       persistSession: false,
     }
-  );
+  )
 }

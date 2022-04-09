@@ -1,49 +1,49 @@
-import type { LoaderFunction, ActionFunction } from "@remix-run/node";
-import { redirect, json } from "@remix-run/node";
-import { Form, useCatch, useLoaderData } from "@remix-run/react";
-import invariant from "tiny-invariant";
+import type { LoaderFunction, ActionFunction } from "@remix-run/node"
+import { redirect, json } from "@remix-run/node"
+import { Form, useCatch, useLoaderData } from "@remix-run/react"
+import invariant from "tiny-invariant"
 
-import { deleteNote, getNote } from "~/models/note.server";
-import type { Note } from "~/models/note.server";
+import { deleteNote, getNote } from "~/models/note.server"
+import type { Note } from "~/models/note.server"
 import {
   commitUserSession,
   requireUserSession,
-} from "~/services/session.server";
+} from "~/services/session.server"
 
 type LoaderData = {
-  note: Note;
-};
+  note: Note
+}
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const { userId } = await requireUserSession(request);
-  invariant(params.noteId, "noteId not found");
+  const { userId } = await requireUserSession(request)
+  invariant(params.noteId, "noteId not found")
 
-  const note = await getNote({ userId, id: params.noteId });
+  const note = await getNote({ userId, id: params.noteId })
   if (!note) {
-    throw new Response("Not Found", { status: 404 });
+    throw new Response("Not Found", { status: 404 })
   }
-  return json<LoaderData>({ note });
-};
+  return json<LoaderData>({ note })
+}
 
 export const action: ActionFunction = async ({ request, params }) => {
   if (request.method !== "DELETE") {
-    return json({ message: "Method not allowed" }, 405);
+    return json({ message: "Method not allowed" }, 405)
   }
 
-  const userSession = await requireUserSession(request);
-  invariant(params.noteId, "noteId not found");
+  const userSession = await requireUserSession(request)
+  invariant(params.noteId, "noteId not found")
 
-  await deleteNote({ userId: userSession.userId, id: params.noteId });
+  await deleteNote({ userId: userSession.userId, id: params.noteId })
 
   return redirect("/notes", {
     headers: {
       "Set-Cookie": await commitUserSession(request, { userSession }),
     },
-  });
-};
+  })
+}
 
 export default function NoteDetailsPage() {
-  const data = useLoaderData() as LoaderData;
+  const data = useLoaderData() as LoaderData
 
   return (
     <div>
@@ -59,19 +59,19 @@ export default function NoteDetailsPage() {
         </button>
       </Form>
     </div>
-  );
+  )
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  return <div>An unexpected error occurred: {error.message}</div>;
+  return <div>An unexpected error occurred: {error.message}</div>
 }
 
 export function CatchBoundary() {
-  const caught = useCatch();
+  const caught = useCatch()
 
   if (caught.status === 404) {
-    return <div>Note not found</div>;
+    return <div>Note not found</div>
   }
 
-  throw new Error(`Unexpected caught response with status: ${caught.status}`);
+  throw new Error(`Unexpected caught response with status: ${caught.status}`)
 }

@@ -1,4 +1,4 @@
-import faker from "@faker-js/faker";
+import faker from "@faker-js/faker"
 
 declare global {
   namespace Cypress {
@@ -13,7 +13,7 @@ declare global {
        * @example
        *    cy.createAccount({ email: 'whatever@example.com', password: 'password' })
        */
-      createAccount: typeof createAccount;
+      createAccount: typeof createAccount
 
       /**
        * Deletes the current @user
@@ -25,7 +25,7 @@ declare global {
        * @example
        *    cy.cleanupUser({ email: 'whatever@example.com' })
        */
-      cleanupUser: typeof cleanupUser;
+      cleanupUser: typeof cleanupUser
     }
   }
 }
@@ -34,38 +34,38 @@ function createAccount({
   email = faker.internet.email(undefined, undefined, "example.com"),
   password = faker.internet.password(),
 }: {
-  email?: string;
-  password?: string;
+  email?: string
+  password?: string
 } = {}) {
   cy.exec(
     `dotenv -- npx ts-node --require tsconfig-paths/register ./cypress/support/create-user.ts "${email}" "${password}"`
-  );
-  cy.then(() => ({ email, password })).as("user");
+  )
+  cy.then(() => ({ email, password })).as("user")
 }
 
 function cleanupUser({ email }: { email?: string } = {}) {
   if (email) {
-    deleteUserByEmail(email);
+    deleteUserByEmail(email)
   } else {
     cy.get("@user").then((user) => {
-      const email = (user as { email?: string }).email;
+      const email = (user as { email?: string }).email
       if (email) {
-        deleteUserByEmail(email);
+        deleteUserByEmail(email)
       }
-    });
+    })
   }
-  cy.clearCookie("__session");
+  cy.clearCookie("__session")
 }
 
 function deleteUserByEmail(email: string) {
   cy.exec(
     `dotenv -- npx ts-node --require tsconfig-paths/register ./cypress/support/delete-user.ts "${email}"`
-  );
-  cy.clearCookie("__session");
+  )
+  cy.clearCookie("__session")
 }
 
-Cypress.Commands.add("createAccount", createAccount);
-Cypress.Commands.add("cleanupUser", cleanupUser);
+Cypress.Commands.add("createAccount", createAccount)
+Cypress.Commands.add("cleanupUser", cleanupUser)
 
 /*
 eslint

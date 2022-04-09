@@ -1,16 +1,16 @@
-import { User } from "@prisma/client";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { User } from "@prisma/client"
+import type { User as SupabaseUser } from "@supabase/supabase-js"
 
-import { prisma } from "~/database/prisma.server";
+import { prisma } from "~/database/prisma.server"
 
-export type { User } from "@prisma/client";
+export type { User } from "@prisma/client"
 
 export async function getUserByEmail(email: User["email"]) {
-  return prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+  return prisma.user.findUnique({ where: { email: email.toLowerCase() } })
 }
 
 export async function deleteUserByEmail(email: User["email"]) {
-  return prisma.user.delete({ where: { email: email.toLowerCase() } });
+  return prisma.user.delete({ where: { email: email.toLowerCase() } })
 }
 
 export async function createUser({
@@ -25,5 +25,5 @@ export async function createUser({
       },
     })
     .then(() => ({ createUserError: null }))
-    .catch((createUserError) => ({ createUserError }));
+    .catch((createUserError) => ({ createUserError }))
 }

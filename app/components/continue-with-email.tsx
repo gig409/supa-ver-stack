@@ -1,22 +1,22 @@
-import React from "react";
+import React from "react"
 
-import { useFetcher } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react"
 
 export default function ContinueWithEmail() {
-  const ref = React.useRef<HTMLFormElement>(null);
-  const sendMagicLink = useFetcher();
-  const { data, state, type } = sendMagicLink;
-  const isSuccessFull = type === "done" && !data?.error;
-  const isLoading = state === "submitting" || state === "loading";
+  const ref = React.useRef<HTMLFormElement>(null)
+  const sendMagicLink = useFetcher()
+  const { data, state, type } = sendMagicLink
+  const isSuccessFull = type === "done" && !data?.error
+  const isLoading = state === "submitting" || state === "loading"
   const buttonLabel = isLoading
     ? "Sending you a link..."
-    : "Continue with email";
+    : "Continue with email"
 
   React.useEffect(() => {
     if (isSuccessFull) {
-      ref.current?.reset();
+      ref.current?.reset()
     }
-  }, [isSuccessFull]);
+  }, [isSuccessFull])
 
   return (
     <sendMagicLink.Form
@@ -47,5 +47,5 @@ export default function ContinueWithEmail() {
         {buttonLabel}
       </button>
     </sendMagicLink.Form>
-  );
+  )
 }

@@ -1,21 +1,21 @@
-import type { LoaderFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import type { LoaderFunction } from "@remix-run/node"
+import { json } from "@remix-run/node"
+import { Link, useLoaderData } from "@remix-run/react"
 
-import { getUserSession } from "~/services/session.server";
+import { getUserSession } from "~/services/session.server"
 
 type LoaderData = {
-  email?: string;
-};
+  email?: string
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const { email } = (await getUserSession(request)) || {};
+  const { email } = (await getUserSession(request)) || {}
 
-  return json({ email });
-};
+  return json({ email })
+}
 
 export default function Index() {
-  const { email } = useLoaderData() as LoaderData;
+  const { email } = useLoaderData() as LoaderData
   return (
     <main className="relative min-h-screen bg-black sm:flex sm:items-center sm:justify-center">
       <div className="relative sm:pb-16 sm:pt-8">
@@ -23,33 +23,33 @@ export default function Index() {
           <div className="relative shadow-xl sm:overflow-hidden sm:rounded-2xl">
             <div className="absolute inset-0">
               <img
-                className="object-cover w-full h-full"
+                className="h-full w-full object-cover"
                 src="https://user-images.githubusercontent.com/1500684/157774694-99820c51-8165-4908-a031-34fc371ac0d6.jpg"
                 alt="Sonic Youth On Stage"
               />
               <div className="absolute inset-0 bg-[color:rgba(254,204,27,0.5)] mix-blend-multiply" />
             </div>
-            <div className="relative px-4 pt-16 pb-8 bg-black bg-opacity-50 lg:pb-18 sm:px-6 sm:pt-24 sm:pb-14 lg:px-8 lg:pt-32">
-              <h1 className="space-x-8 text-6xl font-extrabold tracking-tight text-center sm:text-8xl lg:text-9xl">
-                <span className="text-green-500 uppercase drop-shadow-md">
+            <div className="lg:pb-18 relative bg-black bg-opacity-50 px-4 pt-16 pb-8 sm:px-6 sm:pt-24 sm:pb-14 lg:px-8 lg:pt-32">
+              <h1 className="space-x-8 text-center text-6xl font-extrabold tracking-tight sm:text-8xl lg:text-9xl">
+                <span className="uppercase text-green-500 drop-shadow-md">
                   Supa
                 </span>
-                <span className="text-purple-500 uppercase drop-shadow-md">
+                <span className="uppercase text-purple-500 drop-shadow-md">
                   Ver
                 </span>
-                <span className="text-yellow-500 uppercase drop-shadow-md">
+                <span className="uppercase text-yellow-500 drop-shadow-md">
                   Stack
                 </span>
               </h1>
-              <p className="max-w-lg mx-auto mt-6 text-xl text-center text-white sm:max-w-3xl">
+              <p className="mx-auto mt-6 max-w-lg text-center text-xl text-white sm:max-w-3xl">
                 Check the README.md file for instructions on how to get this
                 project deployed.
               </p>
-              <div className="max-w-sm mx-auto mt-10 sm:flex sm:max-w-none sm:justify-center">
+              <div className="mx-auto mt-10 max-w-sm sm:flex sm:max-w-none sm:justify-center">
                 {email ? (
                   <Link
                     to="/notes"
-                    className="flex items-center justify-center px-4 py-3 text-base font-medium text-yellow-700 bg-white border border-transparent rounded-md shadow-sm hover:bg-yellow-50 sm:px-8"
+                    className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-yellow-700 shadow-sm hover:bg-yellow-50 sm:px-8"
                   >
                     View Notes for {email}
                   </Link>
@@ -58,13 +58,13 @@ export default function Index() {
                     <div className="space-y-4 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-5 sm:space-y-0">
                       <Link
                         to="/join"
-                        className="flex items-center justify-center px-4 py-3 text-base font-medium text-yellow-700 bg-white border border-transparent rounded-md shadow-sm hover:bg-yellow-50 sm:px-8"
+                        className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-yellow-700 shadow-sm hover:bg-yellow-50 sm:px-8"
                       >
                         Sign up
                       </Link>
                       <Link
                         to="/login"
-                        className="flex items-center justify-center px-4 py-3 font-medium text-white bg-yellow-500 rounded-md hover:bg-yellow-600 "
+                        className="flex items-center justify-center rounded-md bg-yellow-500 px-4 py-3 font-medium text-white hover:bg-yellow-600 "
                       >
                         Log In
                       </Link>
@@ -83,8 +83,8 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="px-4 py-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="flex flex-wrap justify-center gap-8 mt-6">
+        <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
+          <div className="mt-6 flex flex-wrap justify-center gap-8">
             {[
               {
                 src: "https://supabase.com/brand-assets/supabase-logo-wordmark--dark.svg",
@@ -150,7 +150,7 @@ export default function Index() {
               <a
                 key={img.href}
                 href={img.href}
-                className="flex justify-center w-32 h-16 p-1 transition grayscale hover:grayscale-0 focus:grayscale-0"
+                className="flex h-16 w-32 justify-center p-1 grayscale transition hover:grayscale-0 focus:grayscale-0"
               >
                 <img
                   alt={img.alt}
@@ -162,5 +162,5 @@ export default function Index() {
         </div>
       </div>
     </main>
-  );
+  )
 }

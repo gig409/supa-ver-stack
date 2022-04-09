@@ -1,36 +1,36 @@
-import * as React from "react";
+import * as React from "react"
 
-import { json, redirect } from "@remix-run/node";
-import type { ActionFunction } from "@remix-run/node";
-import { Form, useActionData, useTransition } from "@remix-run/react";
-import { getFormData, useFormInputProps } from "remix-params-helper";
-import { z } from "zod";
+import { json, redirect } from "@remix-run/node"
+import type { ActionFunction } from "@remix-run/node"
+import { Form, useActionData, useTransition } from "@remix-run/react"
+import { getFormData, useFormInputProps } from "remix-params-helper"
+import { z } from "zod"
 
-import { createNote } from "~/models/note.server";
+import { createNote } from "~/models/note.server"
 import {
   commitUserSession,
   requireUserSession,
-} from "~/services/session.server";
+} from "~/services/session.server"
 
 export const NewNoteFormSchema = z.object({
   title: z.string().min(2, "require-title"),
   body: z.string().min(1, "require-body"),
-});
+})
 
 type ActionData = {
   errors?: {
-    title?: string;
-    body?: string;
-  };
-};
+    title?: string
+    body?: string
+  }
+}
 
 export const action: ActionFunction = async ({ request }) => {
   if (request.method !== "POST") {
-    return json({ message: "Method not allowed" }, 405);
+    return json({ message: "Method not allowed" }, 405)
   }
 
-  const userSession = await requireUserSession(request);
-  const formValidation = await getFormData(request, NewNoteFormSchema);
+  const userSession = await requireUserSession(request)
+  const formValidation = await getFormData(request, NewNoteFormSchema)
 
   if (!formValidation.success) {
     return json<ActionData>(
@@ -43,36 +43,36 @@ export const action: ActionFunction = async ({ request }) => {
           "Set-Cookie": await commitUserSession(request, { userSession }),
         },
       }
-    );
+    )
   }
 
-  const { title, body } = formValidation.data;
+  const { title, body } = formValidation.data
 
-  const note = await createNote({ title, body, userId: userSession.userId });
+  const note = await createNote({ title, body, userId: userSession.userId })
 
   return redirect(`/notes/${note.id}`, {
     headers: {
       "Set-Cookie": await commitUserSession(request, { userSession }),
     },
-  });
-};
+  })
+}
 
 export default function NewNotePage() {
-  const actionData = useActionData() as ActionData;
-  const titleRef = React.useRef<HTMLInputElement>(null);
-  const bodyRef = React.useRef<HTMLTextAreaElement>(null);
-  const inputProps = useFormInputProps(NewNoteFormSchema);
-  const transition = useTransition();
+  const actionData = useActionData() as ActionData
+  const titleRef = React.useRef<HTMLInputElement>(null)
+  const bodyRef = React.useRef<HTMLTextAreaElement>(null)
+  const inputProps = useFormInputProps(NewNoteFormSchema)
+  const transition = useTransition()
   const disabled =
-    transition.state === "submitting" || transition.state === "loading";
+    transition.state === "submitting" || transition.state === "loading"
 
   React.useEffect(() => {
     if (actionData?.errors?.title) {
-      titleRef.current?.focus();
+      titleRef.current?.focus()
     } else if (actionData?.errors?.body) {
-      bodyRef.current?.focus();
+      bodyRef.current?.focus()
     }
-  }, [actionData]);
+  }, [actionData])
 
   return (
     <Form
@@ -145,5 +145,5 @@ export default function NewNotePage() {
         </button>
       </div>
     </Form>
-  );
+  )
 }

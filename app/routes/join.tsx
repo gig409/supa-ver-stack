@@ -1,47 +1,47 @@
-import * as React from "react";
+import * as React from "react"
 
 import type {
   ActionFunction,
   LoaderFunction,
   MetaFunction,
-} from "@remix-run/node";
-import { redirect, json } from "@remix-run/node";
+} from "@remix-run/node"
+import { redirect, json } from "@remix-run/node"
 import {
   Form,
   Link,
   useActionData,
   useSearchParams,
   useTransition,
-} from "@remix-run/react";
-import { getFormData, useFormInputProps } from "remix-params-helper";
+} from "@remix-run/react"
+import { getFormData, useFormInputProps } from "remix-params-helper"
 
-import ContinueWithEmail from "~/components/continue-with-email";
-import { getUserByEmail } from "~/models/user.server";
-import { LoginFormSchema } from "~/routes/login";
-import { createUserAccount } from "~/services/auth.server";
-import { createUserSession, getUserSession } from "~/services/session.server";
+import ContinueWithEmail from "~/components/continue-with-email"
+import { getUserByEmail } from "~/models/user.server"
+import { LoginFormSchema } from "~/routes/login"
+import { createUserAccount } from "~/services/auth.server"
+import { createUserSession, getUserSession } from "~/services/session.server"
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const userSession = await getUserSession(request);
+  const userSession = await getUserSession(request)
 
-  if (userSession) return redirect("/notes");
+  if (userSession) return redirect("/notes")
 
-  return json({});
-};
+  return json({})
+}
 
 interface ActionData {
   errors: {
-    email?: string;
-    password?: string;
-  };
+    email?: string
+    password?: string
+  }
 }
 
 export const action: ActionFunction = async ({ request }) => {
   if (request.method !== "POST") {
-    return json({ message: "Method not allowed" }, 405);
+    return json({ message: "Method not allowed" }, 405)
   }
 
-  const formValidation = await getFormData(request, LoginFormSchema);
+  const formValidation = await getFormData(request, LoginFormSchema)
 
   if (!formValidation.success) {
     return json<ActionData>(
@@ -49,58 +49,58 @@ export const action: ActionFunction = async ({ request }) => {
         errors: formValidation.errors,
       },
       { status: 400 }
-    );
+    )
   }
 
-  const { email, password, redirectTo = "/notes" } = formValidation.data;
+  const { email, password, redirectTo = "/notes" } = formValidation.data
 
-  const existingUser = await getUserByEmail(email);
+  const existingUser = await getUserByEmail(email)
 
   if (existingUser) {
     return json<ActionData>(
       { errors: { email: "user-already-exist" } },
       { status: 400 }
-    );
+    )
   }
 
-  const authSession = await createUserAccount(email, password);
+  const authSession = await createUserAccount(email, password)
 
   if (!authSession) {
     return json<ActionData>(
       { errors: { email: "unable-to-create-account" } },
       { status: 500 }
-    );
+    )
   }
 
   return createUserSession({
     request,
     authSession,
     redirectTo,
-  });
-};
+  })
+}
 
 export const meta: MetaFunction = () => ({
   title: "Sign Up",
-});
+})
 
 export default function Join() {
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? undefined;
-  const actionData = useActionData() as ActionData;
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const passwordRef = React.useRef<HTMLInputElement>(null);
-  const inputProps = useFormInputProps(LoginFormSchema);
-  const transition = useTransition();
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get("redirectTo") ?? undefined
+  const actionData = useActionData() as ActionData
+  const emailRef = React.useRef<HTMLInputElement>(null)
+  const passwordRef = React.useRef<HTMLInputElement>(null)
+  const inputProps = useFormInputProps(LoginFormSchema)
+  const transition = useTransition()
   const disabled =
-    transition.state === "submitting" || transition.state === "loading";
+    transition.state === "submitting" || transition.state === "loading"
 
   React.useEffect(() => {
     if (actionData?.errors?.email) {
-      emailRef.current?.focus();
+      emailRef.current?.focus()
     } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
+      passwordRef.current?.focus()
     }
-  }, [actionData]);
+  }, [actionData])
 
   return (
     <div className="flex min-h-full flex-col justify-center">
@@ -218,5 +218,5 @@ export default function Join() {
         </div>
       </div>
     </div>
-  );
+  )
 }

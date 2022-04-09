@@ -1,27 +1,27 @@
-import { json } from "@remix-run/node";
-import type { LoaderFunction } from "@remix-run/node";
-import { Form, useLoaderData, Outlet, Link, NavLink } from "@remix-run/react";
+import { json } from "@remix-run/node"
+import type { LoaderFunction } from "@remix-run/node"
+import { Form, useLoaderData, Outlet, Link, NavLink } from "@remix-run/react"
 
-import { getUserNoteListItems } from "~/models/note.server";
-import { requireUserSession } from "~/services/session.server";
-import { notFound } from "~/utils/request.server";
+import { getUserNoteListItems } from "~/models/note.server"
+import { requireUserSession } from "~/services/session.server"
+import { notFound } from "~/utils/request.server"
 
-type LoaderData = NonNullable<Awaited<ReturnType<typeof getUserNoteListItems>>>;
+type LoaderData = NonNullable<Awaited<ReturnType<typeof getUserNoteListItems>>>
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const { userId } = await requireUserSession(request);
+  const { userId } = await requireUserSession(request)
 
-  const userNoteListItems = await getUserNoteListItems({ userId });
+  const userNoteListItems = await getUserNoteListItems({ userId })
 
   if (!userNoteListItems) {
-    throw notFound(`No user with id ${userId}`);
+    throw notFound(`No user with id ${userId}`)
   }
 
-  return json<LoaderData>(userNoteListItems);
-};
+  return json<LoaderData>(userNoteListItems)
+}
 
 export default function NotesPage() {
-  const data = useLoaderData() as LoaderData;
+  const data = useLoaderData() as LoaderData
 
   return (
     <div className="flex h-full min-h-screen flex-col">
@@ -79,5 +79,5 @@ export default function NotesPage() {
         </div>
       </main>
     </div>
-  );
+  )
 }

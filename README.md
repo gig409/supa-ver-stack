@@ -39,10 +39,10 @@ Not a fan of bits of the stack? Fork it, change it, and use `npx create-remix --
   > **Note:** Only one for playing around with Supabase or 2 for `staging` and `production`
 
   > **Note:** Used all your free tiers ? Also works with [Supabase CLI](https://github.com/supabase/cli) and local self-hosting
-  
+
   > **Note:** Create a strong database password, but prefer a passphrase, it'll be more easy to use in connection string (no need to escape special char)
-  > 
-  > *example : my_strong_passphrase*
+  >
+  > _example : my_strong_passphrase_
 
 - Go to https://app.supabase.io/project/{PROJECT}/settings/api to find your secrets
 - "Project API keys"
@@ -103,6 +103,7 @@ This is a pretty simple note-taking app, but it's a good example of how you can 
   ```sh
   git remote add origin <ORIGIN_URL>
   ```
+
 - Integrate repo with Vercel
 
 ## GitHub Actions
@@ -126,8 +127,8 @@ We also have a utility to auto-delete the user at the end of your test. Just mak
 
 ```ts
 afterEach(() => {
-  cy.cleanupUser();
-});
+  cy.cleanupUser()
+})
 ```
 
 That way, we can keep your test db clean and keep your tests isolated from one another.
