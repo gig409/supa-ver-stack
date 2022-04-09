@@ -5,7 +5,7 @@
 Learn more about [Remix Stacks](https://remix.run/stacks).
 
 ```
-npx create-remix --template rphlmr/supa-fly-stack
+npx create-remix --template gig409/supa-ver-stack
 ```
 
 ## What's in the stack
