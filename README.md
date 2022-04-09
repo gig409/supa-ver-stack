@@ -1,6 +1,6 @@
-# Remix Supa Fly Stack
+# Remix Supa Ver Stack
 
-![The Remix Indie Stack](https://raw.githubusercontent.com/rphlmr/supa-fly-stack/main/doc/supa-fly-stak.png)
+![The Remix Ver Stack](https://raw.githubusercontent.com/rphlmr/supa-fly-stack/main/doc/supa-fly-stak.png)
 
 Learn more about [Remix Stacks](https://remix.run/stacks).
 
@@ -10,10 +10,8 @@ npx create-remix --template rphlmr/supa-fly-stack
 
 ## What's in the stack
 
-- [Fly app deployment](https://fly.io) with [Docker](https://www.docker.com/products/docker-desktop/)
+- [Vercel app deployment](https://vercel.com) with [Docker](https://www.docker.com/products/docker-desktop/)
 - Production-ready [Supabase Database](https://supabase.com/)
-- Healthcheck endpoint for [Fly backups region fallbacks](https://fly.io/docs/reference/configuration/#services-http_checks)
-- [GitHub Actions](https://github.com/features/actions) for deploy on merge to production and staging environments
 - Email/Password Authentication with [cookie-based sessions](https://remix.run/docs/en/v1/api/remix#createcookiesessionstorage)
   - **NEW** : Magic Link login 🥳
 - Database ORM with [Prisma](https://prisma.io)
@@ -100,75 +98,16 @@ This is a pretty simple note-taking app, but it's a good example of how you can 
 
 ## Deployment
 
-> Do what you know if you are a Fly.io expert.
-
-This Remix Stack comes with two GitHub Actions that handle automatically deploying your app to production and staging environments.
-
-Prior to your first deployment, you'll need to do a few things:
-
-- [Install Fly](https://fly.io/docs/getting-started/installing-flyctl/)
-
-- Sign up and log in to Fly
-
-  ```sh
-  fly auth signup
-  ```
-
-  > **Note:** If you have more than one Fly account, ensure that you are signed into the same account in the Fly CLI as you are in the browser. In your terminal, run `fly auth whoami` and ensure the email matches the Fly account signed into the browser.
-
-- Create two apps on Fly, one for staging and one for production:
-
-  ```sh
-  fly create supa-fly-stack-template
-  fly create supa-fly-stack-template-staging
-  ```
-
-  - Initialize Git.
-
-  ```sh
-  git init
-  ```
-
 - Create a new [GitHub Repository](https://repo.new), and then add it as the remote for your project. **Do not push your app yet!**
 
   ```sh
   git remote add origin <ORIGIN_URL>
   ```
-
-- Add a `FLY_API_TOKEN` to your GitHub repo. To do this, go to your user settings on Fly and create a new [token](https://web.fly.io/user/personal_access_tokens/new), then add it to [your repo secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) with the name `FLY_API_TOKEN`.
-
-- Add a `SESSION_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE`,`SUPABASE_ANON_PUBLIC`, `SERVER_URL` and `DATABASE_URL` to your fly app secrets
-
-  To do this you can run the following commands:
-
-  ```sh
-  # staging
-  fly secrets set SESSION_SECRET=$(openssl rand -hex 32) --app supa-fly-stack-template-staging
-  fly secrets set SUPABASE_URL="https://{YOUR_STAGING_INSTANCE_NAME}.supabase.co" --app supa-fly-stack-template-staging
-  fly secrets set SUPABASE_SERVICE_ROLE="{STAGING_SUPABASE_SERVICE_ROLE}" --app supa-fly-stack-template-staging
-  fly secrets set SUPABASE_ANON_PUBLIC="{STAGING_SUPABASE_ANON_PUBLIC}" --app supa-fly-stack-template-staging
-  fly secrets set DATABASE_URL="postgres://postgres:{STAGING_POSTGRES_PASSWORD}@db.{STAGING_YOUR_INSTANCE_NAME}.supabase.co:5432/postgres" --app supa-fly-stack-template-staging
-  fly secrets set SERVER_URL="https://{YOUR_STAGING_SERVEUR_URL}" --app supa-fly-stack-template-staging
-
-  # production
-  fly secrets set SESSION_SECRET=$(openssl rand -hex 32) --app supa-fly-stack-template
-  fly secrets set SUPABASE_URL="https://{YOUR_INSTANCE_NAME}.supabase.co" --app supa-fly-stack-template
-  fly secrets set SUPABASE_SERVICE_ROLE="{SUPABASE_SERVICE_ROLE}" --app supa-fly-stack-template
-  fly secrets set SUPABASE_ANON_PUBLIC="{SUPABASE_ANON_PUBLIC}" --app supa-fly-stack-template
-  fly secrets set DATABASE_URL="postgres://postgres:{POSTGRES_PASSWORD}@db.{YOUR_INSTANCE_NAME}.supabase.co:5432/postgres" --app supa-fly-stack-template
-  fly secrets set SERVER_URL="https://{YOUR_STAGING_SERVEUR_URL}" --app supa-fly-stack-template
-  ```
-
-  If you don't have openssl installed, you can also use [1password](https://1password.com/generate-password) to generate a random secret, just replace `$(openssl rand -hex 32)` with the generated secret.
-
-Now that everything is set up you can commit and push your changes to your repo. Every commit to your `main` branch will trigger a deployment to your production environment, and every commit to your `dev` branch will trigger a deployment to your staging environment.
+- Integrate repo with Vercel
 
 ## GitHub Actions
 
-> DISCLAIMER : Github actions ==> I'm not an expert about that. Read carefully before using it
-
-We use GitHub Actions for continuous integration and deployment. Anything that gets into the `main` branch will be deployed to production after running tests/build/etc. Anything in the `dev` branch will be deployed to staging.
-
+//TODO
 👉 **You have to add some env secrets for cypress.** 👈
 
 Add a `SESSION_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE`,`SUPABASE_ANON_PUBLIC`, `SERVER_URL` and `DATABASE_URL` to [your repo secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
