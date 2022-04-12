@@ -1,6 +1,6 @@
 # Remix Supa Ver Stack
 
-![The Remix Ver Stack](https://raw.githubusercontent.com/rphlmr/supa-fly-stack/main/doc/supa-fly-stak.png)
+![The Remix Ver Stack](https://raw.githubusercontent.com/gig409/supa-ver-stack/main/doc/supa-ver-stak.png)
 
 Learn more about [Remix Stacks](https://remix.run/stacks).
 
